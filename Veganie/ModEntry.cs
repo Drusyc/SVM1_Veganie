@@ -1,44 +1,73 @@
 ﻿using System;
+using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using StardewModdingAPI;
 using StardewModdingAPI.Events;
 using StardewModdingAPI.Utilities;
 using StardewValley;
 
+
 namespace Veganie
 {
     /// <summary>The mod entry point.</summary>
-    public class ModEntry : Mod
+    public class ModEntry : Mod, StardewModdingAPI.IAssetEditor
     {
-        /*********
-        ** Public methods
-        *********/
-        /// <summary>The mod entry point, called after the mod is first loaded.</summary>
-        /// <param name="helper">Provides simplified APIs for writing mods.</param>
-        public override void Entry(IModHelper helper)
+        /// <summary>Get whether this instance can edit the given asset.</summary>
+        /// <param name="asset">Basic metadata about the asset being loaded.</param>
+        public bool CanEdit<T>(IAssetInfo asset)
         {
-            helper.Events.Input.ButtonPressed += this.OnButtonPressed;
-        }
+            //this.Monitor.Log($"The is: {asset.AssetName}");
+            string[] fields = asset.AssetName.Split('\\');
 
-
-        /*********
-        ** Private methods
-        *********/
-        /// <summary>Raised after the player presses a button on the keyboard, controller, or mouse.</summary>
-        /// <param name="sender">The event sender.</param>
-        /// <param name="e">The event data.</param>
-        private void OnButtonPressed(object sender, ButtonPressedEventArgs e)
-        {
-            this.Monitor.Log($"{Game1.player.Name}{e.Button}.");
-            // ignore if player hasn't loaded a save yet
-            if (!Context.IsWorldReady)
+            if (fields[0].Equals("Data"))
             {
-                this.Monitor.Log($"{Game1.player.Name} game not loaded yet.");
-                return;
+                return true;
             }
 
-            // print button presses to the console window
-            this.Monitor.Log($"{Game1.player.Name} pressed {e.Button}.");
+            return false;
+        }
+
+        /// <summary>Edit a matched asset.</summary>
+        /// <param name="asset">A helper which encapsulates metadata about an asset and enables changes to it.</param>
+        public void Edit<T>(IAssetData asset)
+        {
+
+            // Trying to update Cloth requirement to build
+            // Using : https://stardewvalleywiki.com/Modding:Object_data
+            // Fields:
+            // 0: Name
+            // 1: Price (if sold by player)
+            // 2: Edibility (The 'Edibility' number determines how much health and energy is restored.)
+            // 3: Type and Category
+            // 4: display name (specific to language file)
+            // 5: description
+
+            // Cloth: "Cloth/470/-300/Basic -26/Cloth/A bolt of fine wool cloth.",
+            string[] fields = asset.AssetName.Split('\\');
+
+            if (fields[0].Equals("Data"))
+            {
+                this.Monitor.Log($"> {asset.AssetName}");
+
+                //IDictionary<string, string> data = asset.AsDictionary<string, string>().Data;
+                //foreach (string itemKey in data.Keys)
+                //{
+                //    string value = data[itemKey];
+                //    this.Monitor.Log($"> Found: data[{itemKey}] = {value}");
+                //}
+
+                IDictionary<int, string> data2 = asset.AsDictionary<int, string>().Data;
+                foreach (int itemKey in data2.Keys)
+                {
+                    string value = data2[itemKey];
+                    this.Monitor.Log($"> Found: data[{itemKey}] = {value}");
+                }
+            }
+        }
+
+        public override void Entry(IModHelper helper)
+        {
+            this.Monitor.Log("Holà");
         }
     }
 }
