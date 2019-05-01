@@ -1,0 +1,10 @@
+{
+  "Name": "Veganie",
+  "Author": "Thomas G",
+  "Version": "1.0.0",
+  "Description": "Stardew Valley Without Animal Exploitation",
+  "UniqueID": "drusyc.veganie",
+  "EntryDll": "veganie.dll",
+  "MinimumApiVersion": "2.10.0",
+  "UpdateKeys": []
+}
